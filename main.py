@@ -6,12 +6,11 @@ from datetime import datetime
 import tkinter as tk
 from tkinter import scrolledtext
 
-# Чтение конфигурационного файла
-def read_config(config_path):
-    config = configparser.ConfigParser()
-    config.read(config_path)
-    return config['DEFAULT']['hostname'], config['DEFAULT']['vfs_path']
 
+
+def read_config(path):
+    xml=ET.parse(path)
+    return xml.find('user').text, xml.find('PC').text, xml.find('path').text
 
 class VirtualFileSystem:
     def __init__(self, zip_path):
@@ -87,14 +86,14 @@ def cd(vfs, path):
 
 
 # Основной цикл работы эмулятора с GUI на tkinter
-def run_shell(hostname, vfs_path):
+def run_shell(hostname, PC, vfs_path):
     vfs = VirtualFileSystem(vfs_path)
 
     def get_prompt():
         relative_path = vfs.get_relative_path()
         if relative_path == '.':
             relative_path = ''
-        return f"PS {hostname}/{relative_path}> " if relative_path else f"PS {hostname}> "
+        return f"{PC} {hostname}/{relative_path}> " if relative_path else f"{PC}> "
 
     def handle_command(event=None):
         # Получаем команду без приглашения
@@ -133,5 +132,5 @@ def run_shell(hostname, vfs_path):
 
 # Запуск эмулятора
 if __name__ == "__main__":
-    hostname, vfs_path = read_config('config.ini')
-    run_shell(hostname, vfs_path)
+    hostname, PC, vfs_path = read_config('config.xml')
+    run_shell(hostname, PC, vfs_path)
