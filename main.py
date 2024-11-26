@@ -1,4 +1,3 @@
-import configparser
 import os
 import zipfile
 import xml.etree.ElementTree as ET
@@ -55,7 +54,7 @@ class VirtualFileSystem:
         if os.path.isfile(file_path):
             try:
                 with open(file_path, 'r', encoding='utf-8') as file:
-                    return file.read()
+                    return file.readlines()
             except UnicodeDecodeError:
                 return "Error reading file: unsupported characters"
         else:
@@ -79,7 +78,39 @@ def cd(vfs, path):
     except Exception as e:
         return str(e)
 
+def cat(vfs, file_name):
+    exact_file = os.path.join(vfs.current_path, file_name)
 
+    if os.path.isfile(exact_file):
+        text = ''
+        for line in vfs.read_file(file_name):
+            text+=line
+        return text
+
+    possible_extensions = ['.txt', '.log', '.conf']
+    for ext in possible_extensions:
+        file_with_ext = os.path.join(vfs.current_path, file_name + ext)
+        if os.path.isfile(file_with_ext):
+            return vfs.read_file(file_name + ext)
+
+    return "File not found"
+
+def tail(vfs, file_name):
+    exact_file = os.path.join(vfs.current_path, file_name)
+
+    if os.path.isfile(exact_file):
+        text = ''
+        for line in vfs.read_file(file_name)[-10:]:
+            text+=line
+        return text
+
+    possible_extensions = ['.txt', '.log', '.conf']
+    for ext in possible_extensions:
+        file_with_ext = os.path.join(vfs.current_path, file_name + ext)
+        if os.path.isfile(file_with_ext):
+            return vfs.read_file(file_name + ext)
+
+    return "File not found"
 
 
 
@@ -112,8 +143,20 @@ def run_shell(hostname, PC, vfs_path):
                     output = cd(vfs, path)
                 except ValueError:
                     output = "Please specify a directory."
+            elif command.startswith('cat'):
+                try:
+                    _, file_name = command.split(maxsplit=1)
+                    output = cat(vfs, file_name)
+                except ValueError:
+                    output = "Please specify a file."
             elif command == 'exit':
                 window.quit()
+            elif command.startswith('tail'):
+                try:
+                    _, file_name = command.split(maxsplit=1)
+                    output=tail(vfs, file_name)
+                except ValueError:
+                    output = "Please specify a file"
             else:
                 output = "Unknown command"
 
@@ -127,10 +170,8 @@ def run_shell(hostname, PC, vfs_path):
     terminal_output.grid(row=0, column=0, padx=10, pady=10)
     terminal_output.insert(tk.END, get_prompt())
     terminal_output.bind('<Return>', handle_command)  # Привязка нажатия Enter к выполнению команды
-
     window.mainloop()
 
-# Запуск эмулятора
 if __name__ == "__main__":
     hostname, PC, vfs_path = read_config('config.xml')
     run_shell(hostname, PC, vfs_path)
