@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 import tkinter as tk
 from tkinter import scrolledtext
-
+import shutil
 
 
 def read_config(path):
@@ -59,6 +59,12 @@ class VirtualFileSystem:
                 return "Error reading file: unsupported characters"
         else:
             raise FileNotFoundError("File not found")
+    def move(self, path_A, path_B):
+        try:
+            shutil.move(os.path.join(self.current_path, path_A), os.path.join(self.current_path, path_B))
+        except FileNotFoundError:
+            raise FileNotFoundError("File not found")
+
 
 # Основные команды (ls, cd, cat, chown, date)
 def ls(vfs):
@@ -108,11 +114,18 @@ def tail(vfs, file_name):
     for ext in possible_extensions:
         file_with_ext = os.path.join(vfs.current_path, file_name + ext)
         if os.path.isfile(file_with_ext):
-            return vfs.read_file(file_name + ext)
+            text = ''
+            for line in vfs.read_file(file_name)[-10:]:
+                text += line
+            return text
 
     return "File not found"
 
-
+def mv(vfs, path_A, path_B):
+    try:
+        vfs.move(path_A, path_B)
+    except Exception as e:
+        return str(e)
 
 
 
@@ -155,6 +168,12 @@ def run_shell(hostname, PC, vfs_path):
                 try:
                     _, file_name = command.split(maxsplit=1)
                     output=tail(vfs, file_name)
+                except ValueError:
+                    output = "Please specify a file"
+            elif command.startswith('mv'):
+                try:
+                    _, path_A, path_B = command.split(maxsplit=2)
+                    output=mv(vfs, path_A, path_B)
                 except ValueError:
                     output = "Please specify a file"
             else:
