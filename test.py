@@ -15,7 +15,9 @@ class TestVirtualFileSystem(unittest.TestCase):
         with zipfile.ZipFile(self.zip_file, 'w') as zipf:
             zipf.writestr('file1.txt', 'Hello, World!')
             zipf.writestr('file2.txt', 'Goodbye, World!')
-            zipf.writestr('subdir/file3.txt', 'Hello from subdir!')
+            zipf.writestr('file3.txt', 'Hello, World!')
+            zipf.writestr('file4.txt', 'Goodbye, World!')
+            zipf.writestr('subdir/file3.txt', 'Hello, World!')
 
         # Инициализация виртуальной файловой системы
         self.vfs = VirtualFileSystem(self.zip_file)
@@ -57,12 +59,27 @@ class TestVirtualFileSystem(unittest.TestCase):
 
     def test_cat_invalid(self):
         # Проверка чтения несуществующего файла
-        output = cat(self.vfs, 'nonexistent')
+        output = cat(self.vfs, 'tvvbyovohuvouvo')
         self.assertEqual(output, 'File not found')
 
     def test_cat_invalid_extension(self):
         # Проверка чтения файла без расширения
         output = cat(self.vfs, 'file2')
+        self.assertEqual(output[0], 'Goodbye, World!')
+
+    def test_tail(self):
+        # Чтение содержимого файла
+        output = tail(self.vfs, 'file3')
+        self.assertEqual(output[0], 'Hello, World!')
+
+    def test_tail_invalid(self):
+        # Проверка чтения несуществующего файла
+        output = tail(self.vfs, 'tycitvugbuovgit')
+        self.assertEqual(output, 'File not found')
+
+    def test_tail_invalid_extension(self):
+        # Проверка чтения файла без расширения
+        output = tail(self.vfs, 'file4')
         self.assertEqual(output[0], 'Goodbye, World!')
 
 if __name__ == '__main__':

@@ -114,10 +114,7 @@ def tail(vfs, file_name):
     for ext in possible_extensions:
         file_with_ext = os.path.join(vfs.current_path, file_name + ext)
         if os.path.isfile(file_with_ext):
-            text = ''
-            for line in vfs.read_file(file_name)[-10:]:
-                text += line
-            return text
+            return vfs.read_file(file_name + ext)
 
     return "File not found"
 
