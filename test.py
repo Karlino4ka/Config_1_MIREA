@@ -17,6 +17,7 @@ class TestVirtualFileSystem(unittest.TestCase):
             zipf.writestr('file2.txt', 'Goodbye, World!')
             zipf.writestr('file3.txt', 'Hello, World!')
             zipf.writestr('file4.txt', 'Goodbye, World!')
+            zipf.writestr('file5.txt', 'Mоved')
             zipf.writestr('subdir/file3.txt', 'Hello, World!')
 
         # Инициализация виртуальной файловой системы
@@ -83,6 +84,13 @@ class TestVirtualFileSystem(unittest.TestCase):
         self.assertEqual(output[0], 'Goodbye, World!')
 
     def test_mv(self):
+        output = mv(self.vfs, 'file5.txt', 'subdir')
+        self.assertEqual(output, 'Moved to subdir')
+
+    def test_mv_invalid(self):
+        output = mv(self.vfs, "unbu3bn39b3", "ugbnunbbni")
+        self.assertEqual(output, 'File not found')
+
 
 
 if __name__ == '__main__':

@@ -121,6 +121,7 @@ def tail(vfs, file_name):
 def mv(vfs, path_A, path_B):
     try:
         vfs.move(path_A, path_B)
+        return f"Moved to {path_B}"
     except Exception as e:
         return str(e)
 
