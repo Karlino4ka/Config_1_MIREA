@@ -101,7 +101,11 @@ read_file(self, file_name):
 Параметры: file_name (str): Имя файла для чтения.
 Возвращает: Содержимое файла или сообщение об ошибке, если файл не найден.
 
+Пример работы консоли
+![image](https://github.com/user-attachments/assets/c5bc6cac-c800-4cbf-9e39-0e35ee406c39)
 
+Тесты
+![image](https://github.com/user-attachments/assets/88e5cc75-5696-4910-ac31-3c44b85e3e16)
 
 
 
