@@ -82,5 +82,8 @@ class TestVirtualFileSystem(unittest.TestCase):
         output = tail(self.vfs, 'file4')
         self.assertEqual(output[0], 'Goodbye, World!')
 
+    def test_mv(self):
+
+
 if __name__ == '__main__':
     unittest.main()
